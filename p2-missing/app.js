@@ -431,6 +431,15 @@ function expectedPosition() {
   return expectedTowerPosition(player(), state.round);
 }
 
+function pairedTowerPositions(member, round) {
+  if (!isActive(member, round)) return null;
+  const debuff = debuffFor(member, round);
+  if (currentPattern(round) === "head" && debuff === "share") return ["leftTowerStack", "rightTowerStack"];
+  if (currentPattern(round) === "nohead" && debuff === "fan") return ["leftTowerFanEven", "rightTowerFanEven"];
+  if (currentPattern(round) === "nohead" && debuff === "circle") return ["leftTowerCircle", "rightTowerCircleEven"];
+  return null;
+}
+
 function acceptedPositionKeys() {
   const answer = expectedPosition();
   const member = player();
@@ -439,11 +448,9 @@ function acceptedPositionKeys() {
     return ["shareAssistCenter", "shareAssistRight"];
   }
   if (state.phase !== "tower" || !isActive(member, state.round)) return [answer.key];
-  const debuff = debuffFor(member, state.round);
   // 優先度判断そのものは練習対象外なので、同一マーカーで分岐する左右は両方正解にする。
-  if (currentPattern(state.round) === "head" && debuff === "share") return ["leftTowerStack", "rightTowerStack"];
-  if (currentPattern(state.round) === "nohead" && debuff === "fan") return ["leftTowerFanEven", "rightTowerFanEven"];
-  if (currentPattern(state.round) === "nohead" && debuff === "circle") return ["leftTowerCircle", "rightTowerCircleEven"];
+  const paired = pairedTowerPositions(member, state.round);
+  if (paired) return paired;
   return [answer.key];
 }
 
@@ -663,7 +670,6 @@ function clearMarkerFloat() {
 }
 
 function spawnMarkerFloat(type, spotKey) {
-  clearMarkerFloat();
   if (!type || !markers[spotKey]) return;
   const marker = markers[spotKey];
   const effect = document.createElement("div");
@@ -675,11 +681,36 @@ function spawnMarkerFloat(type, spotKey) {
   el.arena.appendChild(effect);
 }
 
-function markPositionStepOk(spotKey) {
+function towerFloatPositionMap(round, selectedSpotKey = null) {
+  const positions = new Map(activeMembers(round).map((member) => [member.role, expectedTowerPosition(member, round).key]));
+  const me = player();
+  const pair = pairedTowerPositions(me, round);
+  if (!selectedSpotKey || !pair?.includes(selectedSpotKey)) return positions;
+
+  const sameDebuffMembers = ordered(activeMembers(round).filter((member) => debuffFor(member, round) === debuffFor(me, round)));
+  positions.set(me.role, selectedSpotKey);
+  const remainingPositions = pair.filter((positionKey) => positionKey !== selectedSpotKey);
+  sameDebuffMembers
+    .filter((member) => member.role !== me.role)
+    .forEach((member, index) => {
+      if (remainingPositions[index]) positions.set(member.role, remainingPositions[index]);
+    });
+  return positions;
+}
+
+function spawnTowerMarkerFloats(round, selectedSpotKey = null) {
+  clearMarkerFloat();
+  const positions = towerFloatPositionMap(round, selectedSpotKey);
+  activeMembers(round).forEach((member) => {
+    spawnMarkerFloat(nextDebuffAfterTower(member, round), positions.get(member.role));
+  });
+}
+
+function markPositionStepOk(selectedSpotKey = null) {
   state.answeredSteps[stepKey()] = "ok";
-  if (state.phase === "tower" && isActive(player(), state.round)) {
-    state.markerPulse = true;
-    spawnMarkerFloat(nextDebuffAfterTower(player(), state.round), spotKey);
+  if (state.phase === "tower") {
+    if (isActive(player(), state.round)) state.markerPulse = true;
+    spawnTowerMarkerFloats(state.round, selectedSpotKey);
     return;
   }
   clearMarkerFloat();

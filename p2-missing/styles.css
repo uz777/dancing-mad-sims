@@ -286,6 +286,31 @@ select {
   flex: 0 0 auto;
 }
 
+.changelog-list {
+  display: grid;
+  gap: 8px;
+}
+
+.changelog-row {
+  display: grid;
+  grid-template-columns: 64px 132px minmax(0, 1fr);
+  gap: 8px;
+  align-items: baseline;
+  padding-top: 8px;
+  border-top: 1px solid rgba(32, 37, 34, 0.1);
+}
+
+.changelog-row strong {
+  color: var(--ink);
+  font-size: 12px;
+}
+
+.changelog-row time {
+  color: var(--muted);
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+
 .license-note {
   border-color: transparent !important;
   background: transparent !important;
@@ -910,9 +935,10 @@ select {
   width: 102px;
   height: 102px;
   place-items: center;
-  transform: translate(-50%, -50%);
+  opacity: 0;
+  transform: translate(-50%, -92%);
   pointer-events: none;
-  animation: markerFloat 1150ms ease-out forwards;
+  animation: markerFloat 1725ms linear both;
 }
 
 .marker-float .aura {
@@ -977,19 +1003,19 @@ select {
 @keyframes markerFloat {
   0% {
     opacity: 0;
-    transform: translate(-50%, -70%) scale(0.62);
+    transform: translate(-50%, -92%);
   }
-  18% {
+  20% {
     opacity: 1;
-    transform: translate(-50%, -128%) scale(1.08);
+    transform: translate(-50%, -114%);
   }
-  72% {
+  80% {
     opacity: 1;
-    transform: translate(-50%, -188%) scale(1);
+    transform: translate(-50%, -180%);
   }
   100% {
     opacity: 0;
-    transform: translate(-50%, -238%) scale(0.92);
+    transform: translate(-50%, -202%);
   }
 }
 
@@ -1079,6 +1105,11 @@ select {
   .debuff-badge {
     width: 100%;
     justify-content: start;
+  }
+
+  .changelog-row {
+    grid-template-columns: 1fr;
+    gap: 3px;
   }
 
   .spot {
