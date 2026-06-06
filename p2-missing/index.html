@@ -1,0 +1,224 @@
+<!doctype html>
+<html lang="ja">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>ミッシング練習 MVP</title>
+        <link
+            rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+        />
+        <link rel="stylesheet" href="styles.css" />
+    </head>
+    <body>
+        <main class="app">
+            <section class="topbar" aria-label="練習設定">
+                <div class="brand">
+                    <span class="brand-mark">M</span>
+                    <div>
+                        <h1>ミッシング練習</h1>
+                        <p>KT式 1238/4567</p>
+                    </div>
+                </div>
+
+                <div class="controls">
+                    <label class="field">
+                        <span>組分け</span>
+                        <select id="methodSelect">
+                            <option value="lean">リーン式</option>
+                            <option value="yarn">ヤーン式</option>
+                        </select>
+                    </label>
+                    <label class="field">
+                        <span>ロール</span>
+                        <select id="roleSelect"></select>
+                    </label>
+                    <label class="field">
+                        <span>モード</span>
+                        <select id="modeSelect">
+                            <option value="study">学習</option>
+                            <option value="check">確認</option>
+                            <option value="trial">実戦</option>
+                        </select>
+                    </label>
+                    <button id="newRunButton" class="primary" type="button">
+                        はじめる
+                    </button>
+                </div>
+            </section>
+
+            <section id="setupPanel" class="setup-panel panel">
+                <h2>設定</h2>
+                <p>
+                    組分け方法、ロール、モードを選んで「新規開始」を押してください。
+                </p>
+                <div class="tool-info">
+                    <section>
+                        <h3>このシミュレーターについて</h3>
+                        <p>
+                            FF14「絶妖星乱舞」P2
+                            ミッシングの組分け、マーカー更新、塔処理、過去/未来誘導を反復練習するためのブラウザ用シミュレーターです。
+                            学習では正解を見ながら流れを確認し、確認・実践では自分で判断する練習ができます。確認には回答の制限時間はありませんが、実践では制限時間があるほか、選択できる立ち位置が隠されています。
+                        </p>
+                    </section>
+                    <section class="priority-note">
+                        <h3>注意事項</h3>
+                        <p>
+                            このシミュレーターでは、同一マーカーの立ち位置の両方を正解として扱っています。実際の攻略では、採用している解法の優先度に従って立ち位置を決定してください。
+                        </p>
+                    </section>
+                    <section class="license-note">
+                        <h3>利用と再頒布</h3>
+                        <p>
+                            本シミュレーターの改編、複製、再頒布、派生物の公開は、用途を問わず無制限に認めます。
+                        </p>
+                    </section>
+                    <section class="disclaimer">
+                        <h3>免責事項</h3>
+                        <p>
+                            本シミュレーターは学習補助を目的として提供されるものであり、内容の正確性、完全性、有用性を保証するものではありません。本シミュレーターの誤り、利用不能、または利用により生じたいかなる損害についても、作者は一切の責任を負いません。これらに同意できる場合のみ、本シミュレーターを利用してください。
+                        </p>
+                    </section>
+                    <div class="info-links">
+                        <a
+                            href="https://github.com/uz777/dancing-mad-sims"
+                            target="_blank"
+                            rel="noreferrer"
+                            aria-label="GitHub repository"
+                        >
+                            <svg viewBox="0 0 24 24" aria-hidden="true">
+                                <path
+                                    d="M12 2a10 10 0 0 0-3.16 19.49c.5.09.68-.22.68-.48v-1.7c-2.78.6-3.37-1.18-3.37-1.18-.45-1.15-1.1-1.46-1.1-1.46-.9-.62.07-.6.07-.6 1 .07 1.53 1.03 1.53 1.03.89 1.52 2.34 1.08 2.9.83.09-.64.35-1.08.63-1.33-2.22-.25-4.56-1.11-4.56-4.94 0-1.09.39-1.98 1.03-2.68-.1-.25-.45-1.27.1-2.65 0 0 .84-.27 2.75 1.02A9.56 9.56 0 0 1 12 6.99c.85 0 1.7.11 2.5.34 1.9-1.29 2.74-1.02 2.74-1.02.55 1.38.2 2.4.1 2.65.64.7 1.03 1.59 1.03 2.68 0 3.84-2.34 4.68-4.57 4.93.36.31.68.92.68 1.86v2.76c0 .27.18.58.69.48A10 10 0 0 0 12 2Z"
+                                />
+                            </svg>
+                            <span>uz777/dancing-mad-sims</span>
+                        </a>
+                        <a
+                            href="https://x.com/nero3_ffxiv"
+                            target="_blank"
+                            rel="noreferrer"
+                            aria-label="X account"
+                        >
+                            <svg viewBox="0 0 24 24" aria-hidden="true">
+                                <path
+                                    d="M14.4 10.55 22.25 2h-1.86l-6.82 7.43L8.13 2H1.85l8.23 11.24L1.85 22h1.86l7.2-7.64L16.67 22h6.28l-8.55-11.45Zm-2.55 2.78-.83-1.12L4.38 3.32h2.86l5.35 7.16.83 1.12 6.97 9.34h-2.86l-5.68-7.61Z"
+                                />
+                            </svg>
+                            <span>@nero3_ffxiv</span>
+                        </a>
+                    </div>
+                </div>
+            </section>
+
+            <section id="groupPanel" class="group-panel panel hidden">
+                <div class="group-panel-head">
+                    <h2>組分け判定</h2>
+                    <p id="groupQuestion"></p>
+                </div>
+                <div id="groupDebuffs" class="group-debuffs"></div>
+                <div class="group-timer-progress" aria-hidden="true">
+                    <span id="groupTimerBar"></span>
+                </div>
+                <div class="group-choice-row">
+                    <button id="chooseGroupA" class="primary" type="button">
+                        1238組
+                    </button>
+                    <button id="chooseGroupB" class="primary alt" type="button">
+                        4567組
+                    </button>
+                </div>
+                <div
+                    id="groupFeedback"
+                    class="feedback"
+                    aria-live="polite"
+                ></div>
+            </section>
+
+            <section class="main-grid">
+                <section class="arena-panel" aria-label="フィールド">
+                    <div class="arena-head">
+                        <div>
+                            <h2 id="taskTitle">位置を選択</h2>
+                            <p id="taskText">
+                                正しい立ち位置マーカーをクリックしてください。
+                            </p>
+                        </div>
+                    </div>
+
+                    <div
+                        id="arena"
+                        class="arena"
+                        aria-label="立ち位置選択エリア"
+                    >
+                        <div class="half-aoe" aria-hidden="true"></div>
+                        <div class="arena-top">
+                            <div
+                                id="roundTrack"
+                                class="round-track arena-round-track"
+                                aria-label="進行"
+                            ></div>
+                            <div
+                                id="debuffBadge"
+                                class="debuff-badge"
+                                aria-label="現在表示"
+                            ></div>
+                        </div>
+                        <div class="boss" aria-hidden="true">K</div>
+                        <div
+                            id="castLabel"
+                            class="cast-label"
+                            aria-hidden="true"
+                        ></div>
+                        <div class="target-ring" aria-hidden="true"></div>
+                        <div class="tower tower-left" aria-hidden="true">
+                            左塔
+                        </div>
+                        <div class="tower tower-right" aria-hidden="true">
+                            右塔
+                        </div>
+                        <div class="timer-progress" aria-hidden="true">
+                            <span id="timerBar"></span>
+                        </div>
+                    </div>
+
+                    <div
+                        id="feedback"
+                        class="feedback"
+                        aria-live="polite"
+                    ></div>
+                    <div class="action-row">
+                        <button id="nextButton" class="primary" type="button">
+                            次へ
+                        </button>
+                    </div>
+                </section>
+
+                <aside class="side-panel" aria-label="ログ">
+                    <section class="party-display" aria-label="現在表示">
+                        <div class="party-display-head">
+                            <h2>現在のマーカー状態</h2>
+                        </div>
+                        <div id="partyGroups" class="party-groups"></div>
+                    </section>
+
+                    <section>
+                        <h2>ミス履歴</h2>
+                        <div id="mistakeLog" class="mistake-log">
+                            まだありません。
+                        </div>
+                    </section>
+                </aside>
+            </section>
+
+            <section id="resultPanel" class="result-panel panel hidden">
+                <h2>結果</h2>
+                <p id="resultText"></p>
+                <button id="againButton" class="primary" type="button">
+                    もう一度
+                </button>
+            </section>
+        </main>
+
+        <script src="app.js"></script>
+    </body>
+</html>
