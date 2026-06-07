@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>P1 Last Trainer</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="app">
+      <section class="topbar">
+        <div class="brand">
+          <span class="brand-mark">L</span>
+          <div>
+            <h1>P1 Last Trainer</h1>
+            <p>中央の真偽を読んで、正しい位置と向きを選ぶ練習</p>
+          </div>
+        </div>
+
+        <div class="controls">
+          <label class="field">
+            <span>ロール</span>
+            <select id="roleSelect"></select>
+          </label>
+          <button id="startButton" class="primary" type="button">スタート</button>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="game-layout">
+          <div id="field" class="field-preview idle" aria-label="P1 Last MAP">
+            <div id="stripeLayer" class="stripe-layer"></div>
+            <div class="mechanic-layer">
+              <img id="mechanicCue" class="mechanic-cue" alt="" />
+            </div>
+            <img id="centerCue" class="center-cue" alt="" />
+            <div id="positionLayer" class="position-layer" aria-label="立ち位置候補"></div>
+            <div id="gazeIcon" class="gaze-icon" aria-label=""></div>
+            <div id="dragGuide" class="drag-guide hidden" aria-hidden="true">
+              <span class="drag-line"></span>
+              <span id="dragArrow" class="drag-arrow"></span>
+            </div>
+            <div id="resultOverlay" class="result-overlay hidden"></div>
+          </div>
+
+          <aside class="side-panel">
+            <div class="score-grid">
+              <div class="score">
+                <span>現在</span>
+                <strong id="currentScore">0 / 0</strong>
+              </div>
+              <div class="score best">
+                <span>ベスト</span>
+                <strong id="bestScore">0 / 0</strong>
+              </div>
+              <div class="score">
+                <span>残り</span>
+                <strong id="timerText">0.0</strong>
+              </div>
+            </div>
+            <div class="instructions">
+              <strong>遊び方</strong>
+              <p>中央の真偽アイコンで、表示中の頭割り・散会予兆とピンク床が本当か逆かを判断します。</p>
+              <p>正しい立ち位置の点を押し、見るなら上へ、見ないなら下へドラッグして回答します。</p>
+            </div>
+            <div id="feedback" class="feedback">ロールを選んでスタートしてください。</div>
+            <button id="nextButton" class="primary hidden" type="button">次へ</button>
+          </aside>
+        </div>
+      </section>
+    </main>
+
+    <script src="app.js"></script>
+  </body>
+</html>

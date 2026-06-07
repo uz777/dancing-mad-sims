@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg width="100%" height="100%" viewBox="0 0 602 492" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:1.5;">
+    <g transform="matrix(1,0,0,1,-860.79084,-362.729286)">
+        <g id="予兆真・床偽" transform="matrix(1,0,0,1,-3434.599835,-1345.218269)">
+            <g transform="matrix(1,0,0,1,438.825594,451.702008)">
+                <ellipse cx="4157.531" cy="1576.872" rx="287.216" ry="126.659" style="fill:rgb(241,189,243);fill-opacity:0;stroke:rgb(0,170,233);stroke-width:27.5px;"/>
+            </g>
+            <g transform="matrix(1,0,0,1,438.825594,325.043038)">
+                <ellipse cx="4157.531" cy="1576.872" rx="287.216" ry="126.659" style="fill:rgb(241,189,243);fill-opacity:0;stroke:rgb(233,0,0);stroke-width:27.5px;"/>
+            </g>
+            <g transform="matrix(1,0,0,1,412.447872,201.537073)">
+                <g transform="matrix(1,0,0,1,-107.117556,-522.370471)">
+                    <circle cx="4178.742" cy="2222.749" r="53.559" style="fill:rgb(255,88,8);stroke:rgb(255,0,0);stroke-width:27.5px;"/>
+                </g>
+                <g transform="matrix(2.001211,0,0,2.001211,-3750.099229,-2241.661617)">
+                    <g transform="matrix(50,0,0,50,3924.096647,1987.161527)">
+                    </g>
+                    <text x="3894.8px" y="1987.162px" style="font-family:'CascadiaCodeRoman-Regular', 'Cascadia Code', monospace;font-size:50px;fill:rgb(255,246,185);">?</text>
+                </g>
+            </g>
+            <g transform="matrix(1,0,0,1,687.948651,432.160594)">
+                <g transform="matrix(1,0,0,1,-107.117556,-522.370471)">
+                    <circle cx="4178.742" cy="2222.749" r="53.559" style="fill:rgb(255,88,8);stroke:rgb(255,0,0);stroke-width:27.5px;"/>
+                </g>
+                <g transform="matrix(2.001211,0,0,2.001211,-3750.099229,-2241.661617)">
+                    <g transform="matrix(50,0,0,50,3924.096647,1987.161527)">
+                    </g>
+                    <text x="3894.8px" y="1987.162px" style="font-family:'CascadiaCodeRoman-Regular', 'Cascadia Code', monospace;font-size:50px;fill:rgb(255,246,185);">?</text>
+                </g>
+            </g>
+            <g transform="matrix(1,0,0,1,516.294527,-447.492368)">
+                <circle cx="4178.742" cy="2222.749" r="53.559" style="fill:rgb(70,255,244);stroke:rgb(8,0,155);stroke-width:27.5px;"/>
+            </g>
+            <g transform="matrix(1,0,0,1,364.055292,-213.02362)">
+                <circle cx="4178.742" cy="2222.749" r="53.559" style="fill:rgb(70,255,244);stroke:rgb(8,0,155);stroke-width:27.5px;"/>
+            </g>
+        </g>
+    </g>
+</svg>

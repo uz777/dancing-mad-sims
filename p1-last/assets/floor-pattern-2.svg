@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg width="100%" height="100%" viewBox="1728.3462 1867.3048 1573.3474 1573.3474" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;">
+    <g id="床パターン2">
+        <g id="パターン1" transform="matrix(-0.707107,0.707107,-0.707107,-0.707107,5340.193318,1138.856097)">
+            <g transform="matrix(0,1,-1,0,4671.866149,-1049.230587)">
+                <path d="M2024.658,2381.324L2024.658,824.305C2166.382,824.305 2299.313,862.257 2413.831,928.545L2413.831,2277.084C2299.313,2343.372 2166.382,2381.324 2024.658,2381.324Z" style="fill:rgb(241,189,243);"/>
+            </g>
+            <g transform="matrix(0,-1,1,0,1466.237153,2999.868929)">
+                <path d="M2413.994,2276.989L2413.994,928.64C2646.575,1063.342 2803.168,1314.935 2803.168,1602.814C2803.168,1890.694 2646.575,2142.287 2413.994,2276.989Z" style="fill:rgb(241,189,243);"/>
+            </g>
+        </g>
+    </g>
+</svg>
