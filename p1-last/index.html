@@ -1,75 +1,182 @@
 <!doctype html>
 <html lang="ja">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>P1 Last Trainer</title>
-    <link rel="stylesheet" href="styles.css" />
-  </head>
-  <body>
-    <main class="app">
-      <section class="topbar">
-        <div class="brand">
-          <span class="brand-mark">L</span>
-          <div>
-            <h1>P1 Last Trainer</h1>
-            <p>中央の真偽を読んで、正しい位置と向きを選ぶ練習</p>
-          </div>
-        </div>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>P1 Last Trainer</title>
+        <link rel="stylesheet" href="styles.css" />
+    </head>
+    <body>
+        <main class="app">
+            <section class="topbar">
+                <div class="brand">
+                    <span class="brand-mark">L</span>
+                    <div>
+                        <h1>P1 Last Trainer</h1>
+                        <p>中央の真偽を読んで、正しい位置と向きを選ぶ練習</p>
+                    </div>
+                </div>
 
-        <div class="controls">
-          <label class="field">
-            <span>ロール</span>
-            <select id="roleSelect"></select>
-          </label>
-          <button id="startButton" class="primary" type="button">スタート</button>
-        </div>
-      </section>
+                <div class="controls">
+                    <label class="field">
+                        <span>ロール</span>
+                        <select id="roleSelect"></select>
+                    </label>
+                    <button id="startButton" class="primary" type="button">
+                        スタート
+                    </button>
+                </div>
+            </section>
 
-      <section class="panel">
-        <div class="game-layout">
-          <div id="field" class="field-preview idle" aria-label="P1 Last MAP">
-            <div id="stripeLayer" class="stripe-layer"></div>
-            <div class="mechanic-layer">
-              <img id="mechanicCue" class="mechanic-cue" alt="" />
-            </div>
-            <img id="centerCue" class="center-cue" alt="" />
-            <div id="positionLayer" class="position-layer" aria-label="立ち位置候補"></div>
-            <div id="gazeIcon" class="gaze-icon" aria-label=""></div>
-            <div id="dragGuide" class="drag-guide hidden" aria-hidden="true">
-              <span class="drag-line"></span>
-              <span id="dragArrow" class="drag-arrow"></span>
-            </div>
-            <div id="resultOverlay" class="result-overlay hidden"></div>
-          </div>
+            <section class="panel">
+                <div class="game-layout">
+                    <div
+                        id="field"
+                        class="field-preview idle"
+                        aria-label="P1 Last MAP"
+                    >
+                        <div id="stripeLayer" class="stripe-layer"></div>
+                        <div class="mechanic-layer">
+                            <img id="mechanicCue" class="mechanic-cue" alt="" />
+                        </div>
+                        <img id="centerCue" class="center-cue" alt="" />
+                        <div
+                            id="positionLayer"
+                            class="position-layer"
+                            aria-label="立ち位置候補"
+                        ></div>
+                        <div
+                            id="gazeIcon"
+                            class="gaze-icon"
+                            aria-label=""
+                        ></div>
+                        <div
+                            id="dragGuide"
+                            class="drag-guide hidden"
+                            aria-hidden="true"
+                        >
+                            <span class="drag-line"></span>
+                            <span id="dragArrow" class="drag-arrow"></span>
+                        </div>
+                        <div
+                            id="resultOverlay"
+                            class="result-overlay hidden"
+                        ></div>
+                    </div>
 
-          <aside class="side-panel">
-            <div class="score-grid">
-              <div class="score">
-                <span>現在</span>
-                <strong id="currentScore">0 / 0</strong>
-              </div>
-              <div class="score best">
-                <span>ベスト</span>
-                <strong id="bestScore">0 / 0</strong>
-              </div>
-              <div class="score">
-                <span>残り</span>
-                <strong id="timerText">0.0</strong>
-              </div>
-            </div>
-            <div class="instructions">
-              <strong>遊び方</strong>
-              <p>中央の真偽アイコンで、表示中の頭割り・散会予兆とピンク床が本当か逆かを判断します。</p>
-              <p>正しい立ち位置の点を押し、見るなら上へ、見ないなら下へドラッグして回答します。</p>
-            </div>
-            <div id="feedback" class="feedback">ロールを選んでスタートしてください。</div>
-            <button id="nextButton" class="primary hidden" type="button">次へ</button>
-          </aside>
-        </div>
-      </section>
-    </main>
+                    <aside class="side-panel">
+                        <div class="score-grid">
+                            <div class="score">
+                                <span>現在</span>
+                                <strong id="currentScore">0 / 0</strong>
+                            </div>
+                            <div class="score best">
+                                <span>ベスト</span>
+                                <strong id="bestScore">0 / 0</strong>
+                            </div>
+                            <div class="score">
+                                <span>残り</span>
+                                <strong id="timerText">0.0</strong>
+                            </div>
+                        </div>
+                        <div class="instructions">
+                            <strong>遊び方</strong>
+                            <p>
+                                中央の真偽アイコンで、表示中の頭割り・散会予兆とピンク床が本当か逆かを判断します。
+                            </p>
+                            <p>
+                                正しい立ち位置の点を押し、見るなら上へ、見ないなら下へドラッグして回答します。
+                            </p>
+                        </div>
+                        <div id="feedback" class="feedback">
+                            ロールを選んでスタートしてください。
+                        </div>
+                        <button
+                            id="nextButton"
+                            class="primary hidden"
+                            type="button"
+                        >
+                            次へ
+                        </button>
+                    </aside>
+                </div>
+            </section>
 
-    <script src="app.js"></script>
-  </body>
+            <section class="tool-info" aria-label="補足情報">
+                <section>
+                    <h3>このシミュレーターについて</h3>
+                    <p>
+                        FF14「絶妖星乱舞」P1ラストの、真偽・視線・頭割り/散会・床判定をブラウザ上で反復練習するためのシミュレーターです。
+                        表示された予兆に対して、中央の真偽アイコンを読み、選択したロールの正しい立ち位置と見る/見ないを素早く判断します。
+                    </p>
+                </section>
+                <section class="license-note">
+                    <h3>利用と再配布</h3>
+                    <p>
+                        本シミュレーターの改編、複製、再頒布、派生物の公開は、用途を問わず無制限に認めます。
+                    </p>
+                </section>
+                <section class="disclaimer">
+                    <h3>免責事項</h3>
+                    <p>
+                        本シミュレーターは学習補助を目的として提供されるものであり、内容の正確性、完全性、有用性を保証するものではありません。
+                        本シミュレーターの誤り、利用不能、または利用により生じたいかなる損害についても、作者は一切の責任を負いません。
+                        これらに同意できる場合のみ、本シミュレーターを利用してください。
+                    </p>
+                </section>
+                <div class="info-links">
+                    <a
+                        href="https://github.com/uz777/dancing-mad-sims"
+                        target="_blank"
+                        rel="noreferrer"
+                        aria-label="GitHub repository"
+                    >
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <path
+                                d="M12 2a10 10 0 0 0-3.16 19.49c.5.09.68-.22.68-.48v-1.7c-2.78.6-3.37-1.18-3.37-1.18-.45-1.15-1.1-1.46-1.1-1.46-.9-.62.07-.6.07-.6 1 .07 1.53 1.03 1.53 1.03.89 1.52 2.34 1.08 2.9.83.09-.64.35-1.08.63-1.33-2.22-.25-4.56-1.11-4.56-4.94 0-1.09.39-1.98 1.03-2.68-.1-.25-.45-1.27.1-2.65 0 0 .84-.27 2.75 1.02A9.56 9.56 0 0 1 12 6.99c.85 0 1.7.11 2.5.34 1.9-1.29 2.74-1.02 2.74-1.02.55 1.38.2 2.4.1 2.65.64.7 1.03 1.59 1.03 2.68 0 3.84-2.34 4.68-4.57 4.93.36.31.68.92.68 1.86v2.76c0 .27.18.58.69.48A10 10 0 0 0 12 2Z"
+                            />
+                        </svg>
+                        <span>uz777/dancing-mad-sims</span>
+                    </a>
+                    <a
+                        href="https://x.com/nero3_ffxiv"
+                        target="_blank"
+                        rel="noreferrer"
+                        aria-label="X account"
+                    >
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <path
+                                d="M14.4 10.55 22.25 2h-1.86l-6.82 7.43L8.13 2H1.85l8.23 11.24L1.85 22h1.86l7.2-7.64L16.67 22h6.28l-8.55-11.45Zm-2.55 2.78-.83-1.12L4.38 3.32h2.86l5.35 7.16.83 1.12 6.97 9.34h-2.86l-5.68-7.61Z"
+                            />
+                        </svg>
+                        <span>@nero3_ffxiv</span>
+                    </a>
+                </div>
+                <section class="changelog">
+                    <h3>更新履歴</h3>
+                    <div class="changelog-list">
+                        <div class="changelog-row">
+                            <strong>v1.0.1</strong>
+                            <time datetime="2026-06-08T00:00:00+09:00"
+                                >2026-06-08 14:56</time
+                            >
+                            <p>
+                                近接散会位置の誤りを修正。その他細かな表示改善。
+                            </p>
+                        </div>
+                        <div class="changelog-row">
+                            <strong>v1.0.0</strong>
+                            <time datetime="2026-06-07T00:00:00+09:00"
+                                >2026-06-08 16:37</time
+                            >
+                            <p>
+                                初回公開。P1終盤の真偽、床、視線、頭割り/散会の判定練習を実装。
+                            </p>
+                        </div>
+                    </div>
+                </section>
+            </section>
+        </main>
+        <script src="app.js"></script>
+    </body>
 </html>

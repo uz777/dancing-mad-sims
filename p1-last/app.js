@@ -13,6 +13,13 @@ const STRIPES = {
 const ROLES = ["MT", "ST", "H1", "H2", "D1", "D2", "D3", "D4"];
 const GAZES = ["look", "avoid"];
 const MECHANICS = ["spread", "stack"];
+const STATUS = {
+  idle: "idle",
+  cue: "cue",
+  playing: "playing",
+  review: "review",
+  between: "between",
+};
 
 const patterns = [
   { id: "odd-right", parity: "odd", side: "right", stripe: "odd", rotation: "45deg" },
@@ -51,11 +58,11 @@ const positionSets = {
     spread: {
       D4: { x: 62.77, y: 4.85 },
       ST: { x: 47.07, y: 20.87 },
-      D2: { x: 24.07, y: 44.03 },
+      D2: { x: 58.8, y: 38.16 },
       H2: { x: 4.56, y: 63.53 },
       D3: { x: 96.71, y: 40.54 },
       H1: { x: 41.2, y: 97.16 },
-      MT: { x: 58.8, y: 38.16 },
+      MT: { x: 24.07, y: 44.03 },
       D1: { x: 39.61, y: 56.87 },
     },
     stack: {
@@ -67,9 +74,9 @@ const positionSets = {
     spread: {
       D4: { x: 58.64, y: 1.99 },
       ST: { x: 42.47, y: 17.22 },
-      D2: { x: 19.94, y: 39.43 },
+      D2: { x: 62.45, y: 41.49 },
       H2: { x: 1.86, y: 58.78 },
-      MT: { x: 62.45, y: 41.49 },
+      MT: { x: 19.94, y: 39.43 },
       D1: { x: 43.42, y: 60.68 },
       D3: { x: 92.74, y: 37.05 },
       H1: { x: 36.92, y: 92.4 },
@@ -114,7 +121,7 @@ const positionSets = {
 };
 
 const state = {
-  status: "idle",
+  status: STATUS.idle,
   selectedRole: "MT",
   round: 0,
   streak: 0,
@@ -204,7 +211,7 @@ function makePrompt() {
 function startRun() {
   stopTimers();
   state.selectedRole = el.roleSelect.value;
-  state.status = "cue";
+  state.status = STATUS.cue;
   state.round = 0;
   state.streak = 0;
   state.score = 0;
@@ -213,19 +220,20 @@ function startRun() {
 
 function nextRound() {
   stopTimers();
-  state.status = "cue";
+  state.status = STATUS.cue;
   state.round += 1;
   state.selectedKey = null;
   state.selectedGaze = null;
   state.prompt = makePrompt();
   state.secondsLeft = CONFIG.roundSeconds;
   hideResult();
+  clearFeedback();
   render();
   state.revealTimerId = setTimeout(startCountdown, CONFIG.gazePreviewMs);
 }
 
 function startCountdown() {
-  state.status = "playing";
+  state.status = STATUS.playing;
   state.secondsLeft = CONFIG.roundSeconds;
   state.startedAt = performance.now();
   render();
@@ -251,7 +259,7 @@ function stopTimers() {
 }
 
 function choosePosition(key, gazeAnswer) {
-  if (state.status !== "playing") return;
+  if (state.status !== STATUS.playing) return;
 
   state.selectedKey = key;
   state.selectedGaze = gazeAnswer;
@@ -270,7 +278,7 @@ function clearRound() {
   state.streak += 1;
   state.score += gained;
   updateBestScore();
-  state.status = "between";
+  state.status = STATUS.between;
 
   showFeedback("ok", `正解。残り時間ボーナス ${gained} 点`);
   showResult(`正解\n+${gained}点`);
@@ -279,15 +287,53 @@ function clearRound() {
 }
 
 function failRound(timedOut) {
-  if (state.status !== "playing") return;
+  if (state.status !== STATUS.playing) return;
 
   stopTimers();
-  state.status = "review";
+  state.status = STATUS.review;
   state.streak = 0;
   state.score = 0;
-  showFeedback("bad", timedOut ? "時間切れ。正解位置を表示しています。" : "不正解。正解位置を表示しています。");
+  showFeedback("bad", reviewMessage(timedOut));
   hideResult();
   render();
+}
+
+function reviewMessage(timedOut) {
+  const reason = timedOut ? "時間切れ。" : "不正解。";
+  return `${reason}正解位置とロールを表示しています。\n正解: ${correctJudgementText(state.prompt)}`;
+}
+
+function gazeDirectionText(gazeId) {
+  return gazeId === "look" ? "上ドラッグ（見る）" : "下ドラッグ（見ない）";
+}
+
+function correctJudgementText(prompt) {
+  const { actualMechanic, actualPattern } = resolvePrompt(prompt);
+  const gazeText = prompt.gaze === "look" ? "見る" : "見ない";
+  const mechanicText = actualMechanic === "stack" ? "頭割り" : "散会";
+  const floorText = isCorrectPointOnPink(prompt, actualPattern) ? "踏む" : "踏まない";
+  return `${gazeText} / ${mechanicText} / ${floorText}`;
+}
+
+function isCorrectPointOnPink(prompt, actualPattern) {
+  const point = pointFromAnswerKey(answerKey(prompt));
+  if (!point) return false;
+  return isPointOnPink(point, actualPattern);
+}
+
+function pointFromAnswerKey(key) {
+  const parsed = parseChoiceKey(key);
+  return positionSets[parsed.patternId]?.[parsed.mechanic]?.[parsed.label] || null;
+}
+
+function isPointOnPink(point, pattern) {
+  const angle = pattern.rotation === "45deg" ? 45 : -45;
+  const radians = (-angle * Math.PI) / 180;
+  const dx = point.x - 50;
+  const dy = point.y - 50;
+  const localX = 50 + dx * Math.cos(radians) - dy * Math.sin(radians);
+  const slice = Math.max(0, Math.min(3, Math.floor(localX / 25)));
+  return pattern.stripe === "odd" ? slice === 0 || slice === 2 : slice === 1 || slice === 3;
 }
 
 function updateBestScore() {
@@ -300,6 +346,10 @@ function updateBestScore() {
 function showFeedback(kind, message) {
   el.feedback.className = kind ? `feedback ${kind}` : "feedback";
   el.feedback.textContent = message;
+}
+
+function clearFeedback() {
+  showFeedback("", "");
 }
 
 function showResult(message) {
@@ -326,12 +376,12 @@ function render() {
 function renderScore() {
   el.currentScore.textContent = `${state.streak} / ${state.score}`;
   el.bestScore.textContent = `${state.bestStreak} / ${state.bestScore}`;
-  el.timerText.textContent = state.status === "idle" ? "0.0" : state.secondsLeft.toFixed(1);
+  el.timerText.textContent = state.status === STATUS.idle ? "0.0" : state.secondsLeft.toFixed(1);
 }
 
 function renderControls() {
-  el.startButton.disabled = state.status !== "idle";
-  el.nextButton.classList.toggle("hidden", state.status !== "review");
+  el.startButton.disabled = state.status !== STATUS.idle;
+  el.nextButton.classList.toggle("hidden", state.status !== STATUS.review);
 }
 
 function renderField() {
@@ -345,7 +395,7 @@ function renderField() {
   applyPattern(el.stripeLayer, state.prompt.displayPattern);
   renderGazeIcon(state.prompt.gaze);
 
-  if (state.status === "cue") {
+  if (state.status === STATUS.cue) {
     el.positionLayer.innerHTML = "";
     return;
   }
@@ -364,15 +414,16 @@ function renderGazeIcon(gazeId) {
 function renderPositions() {
   const choices = choicePointsForSide(state.prompt.displayPattern.side);
   const correctKey = answerKey(state.prompt);
+  const resolvedPrompt = resolvePrompt(state.prompt);
 
   el.positionLayer.innerHTML = "";
   choices.forEach((choice) => {
-    const marker = createPositionMarker(choice, correctKey);
+    const marker = createPositionMarker(choice, correctKey, resolvedPrompt);
     el.positionLayer.appendChild(marker);
   });
 }
 
-function createPositionMarker(choice, correctKey) {
+function createPositionMarker(choice, correctKey, resolvedPrompt) {
   const key = choice.keys.join("|");
   const marker = document.createElement("button");
   marker.type = "button";
@@ -380,14 +431,37 @@ function createPositionMarker(choice, correctKey) {
   marker.style.left = `${choice.x}%`;
   marker.style.top = `${choice.y}%`;
   marker.setAttribute("aria-label", "choice");
-  marker.disabled = state.status !== "playing";
+  marker.disabled = state.status !== STATUS.playing;
+  if (state.status === STATUS.review) appendReviewLabel(marker, choice, resolvedPrompt);
   attachDragAnswer(marker, key);
   return marker;
 }
 
+function appendReviewLabel(marker, choice, resolvedPrompt) {
+  const labels = labelsFromChoice(choice, resolvedPrompt);
+  if (labels.length === 0) return;
+  marker.appendChild(createMarkerLabel(labels));
+}
+
+function createMarkerLabel(labels) {
+  const label = document.createElement("span");
+  label.className = "marker-label";
+  label.textContent = labels.join("/");
+  return label;
+}
+
+function labelsFromChoice(choice, resolvedPrompt) {
+  const { actualPattern, actualMechanic } = resolvedPrompt;
+  const labels = choice.keys
+    .map(parseChoiceKey)
+    .filter((key) => key.patternId === actualPattern.id && key.mechanic === actualMechanic)
+    .map((key) => key.label);
+  return [...new Set(labels)];
+}
+
 function markerClasses(choice, key, correctKey) {
   const classes = ["position-marker"];
-  if (state.status === "review" && choice.keys.includes(correctKey)) classes.push("answer");
+  if (state.status === STATUS.review && choice.keys.includes(correctKey)) classes.push("answer", `gaze-${state.prompt.gaze}`);
   if (state.selectedKey === key) {
     const isCorrectGaze = state.selectedGaze === state.prompt.gaze;
     classes.push(choice.keys.includes(correctKey) && isCorrectGaze ? "correct" : "wrong");
@@ -395,12 +469,21 @@ function markerClasses(choice, key, correctKey) {
   return classes.join(" ");
 }
 
+function parseChoiceKey(key) {
+  const parts = key.split("-");
+  return {
+    patternId: `${parts[0]}-${parts[1]}`,
+    mechanic: parts[2],
+    label: parts[3],
+  };
+}
+
 function attachDragAnswer(marker, key) {
   let startY = 0;
   let pointerId = null;
 
   marker.addEventListener("pointerdown", (event) => {
-    if (state.status !== "playing") return;
+    if (state.status !== STATUS.playing) return;
     pointerId = event.pointerId;
     startY = event.clientY;
     marker.setPointerCapture(pointerId);
@@ -408,12 +491,12 @@ function attachDragAnswer(marker, key) {
   });
 
   marker.addEventListener("pointermove", (event) => {
-    if (state.status !== "playing" || pointerId !== event.pointerId) return;
+    if (state.status !== STATUS.playing || pointerId !== event.pointerId) return;
     updateDragGuide(event.clientY - startY);
   });
 
   marker.addEventListener("pointerup", (event) => {
-    if (state.status !== "playing" || pointerId !== event.pointerId) return;
+    if (state.status !== STATUS.playing || pointerId !== event.pointerId) return;
     const deltaY = event.clientY - startY;
     pointerId = null;
     hideDragGuide();
