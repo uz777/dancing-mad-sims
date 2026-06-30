@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>絶ケフカ P3 サイコロ練習</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <main class="app-shell">
+      <section class="game-panel" aria-label="絶ケフカ P3 サイコロ練習">
+        <header class="topbar">
+          <div>
+            <p class="eyebrow">P3 Dice Drill</p>
+            <h1>絶ケフカ サイコロ</h1>
+          </div>
+          <div class="state-row" aria-live="polite">
+            <span id="phaseLabel" class="state-chip">出題中</span>
+            <span id="directionLabel" class="state-chip state-chip-muted">--</span>
+          </div>
+        </header>
+
+        <div class="play-layout">
+          <div class="field-frame">
+            <div id="field" class="field" data-phase="question">
+              <div class="field-rings" aria-hidden="true"></div>
+              <div id="attackLine" class="attack-line" aria-hidden="true">
+                <span class="beam-core"></span>
+                <span class="attack-tip"></span>
+              </div>
+              <div id="markerLayer" class="marker-layer" aria-hidden="true"></div>
+              <div id="slotLayer" class="slot-layer"></div>
+              <div class="boss-token" aria-hidden="true">ケ</div>
+              <div id="diceCallout" class="dice-callout" aria-live="polite" hidden>
+                <span>サイコロ</span>
+                <div id="calloutNumber" class="dice-marker dice-placeholder" aria-label="未付与">-</div>
+              </div>
+            </div>
+          </div>
+
+          <aside class="hud" aria-live="polite">
+            <div class="dice-readout">
+              <span>付与番号</span>
+              <div id="diceValue" class="dice-marker dice-placeholder" aria-label="未付与">-</div>
+            </div>
+            <div id="resultBox" class="result-box">攻撃を確認中</div>
+            <button id="retryButton" class="retry-button" type="button" disabled>もう一度</button>
+          </aside>
+        </div>
+      </section>
+    </main>
+
+    <script src="app.js"></script>
+  </body>
+</html>
