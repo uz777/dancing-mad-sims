@@ -1,0 +1,612 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#080a12">
+  <title>P4 Says — デバフメモ</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #080a12;
+      --panel: rgba(20, 23, 36, 0.84);
+      --panel-border: rgba(255, 255, 255, 0.1);
+      --text: #f4f5fb;
+      --muted: #9297aa;
+      --true: #54b7ff;
+      --false: #ff5e63;
+      --danger: #ff4f59;
+      --icon-size: clamp(76px, 10vw, 136px);
+      --selector-size: clamp(42px, 5vw, 58px);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      min-height: 100%;
+      margin: 0;
+    }
+
+    body {
+      min-height: 100svh;
+      overflow-x: hidden;
+      background:
+        radial-gradient(circle at 50% 45%, rgba(67, 75, 127, 0.22), transparent 42%),
+        radial-gradient(circle at 12% 0%, rgba(81, 183, 255, 0.08), transparent 30%),
+        radial-gradient(circle at 88% 100%, rgba(255, 74, 93, 0.08), transparent 32%),
+        var(--bg);
+      color: var(--text);
+      font-family: "Hiragino Kaku Gothic ProN", "Yu Gothic", "Meiryo", system-ui, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+    }
+
+    button,
+    input {
+      font: inherit;
+    }
+
+    button {
+      color: inherit;
+    }
+
+    .app {
+      width: min(1480px, 100%);
+      min-height: 100svh;
+      margin: 0 auto;
+      padding: max(18px, env(safe-area-inset-top)) max(18px, env(safe-area-inset-right)) max(18px, env(safe-area-inset-bottom)) max(18px, env(safe-area-inset-left));
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      gap: 18px;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: baseline;
+      gap: 11px;
+      min-width: 0;
+    }
+
+    .brand h1 {
+      margin: 0;
+      font-family: ui-monospace, "Cascadia Mono", monospace;
+      font-size: clamp(19px, 2.2vw, 30px);
+      letter-spacing: 0.08em;
+      line-height: 1;
+    }
+
+    .brand p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      white-space: nowrap;
+    }
+
+    .toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 10px;
+    }
+
+    .reverse-toggle {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      min-height: 44px;
+      padding: 7px 11px;
+      border: 1px solid var(--panel-border);
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.045);
+      color: #c8cad5;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .reverse-toggle input {
+      position: absolute;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .switch-track {
+      position: relative;
+      width: 36px;
+      height: 20px;
+      flex: 0 0 auto;
+      border-radius: 999px;
+      background: #343847;
+      transition: background 160ms ease;
+    }
+
+    .switch-track::after {
+      content: "";
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: #e9ebf4;
+      transition: transform 160ms ease;
+    }
+
+    .reverse-toggle:has(input:checked) .switch-track {
+      background: #7768ff;
+    }
+
+    .reverse-toggle:has(input:checked) .switch-track::after {
+      transform: translateX(16px);
+    }
+
+    .reset-button {
+      min-height: 44px;
+      padding: 0 15px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.07);
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 900;
+      transition: background 120ms ease, transform 120ms ease;
+    }
+
+    .reset-button:hover {
+      background: rgba(255, 255, 255, 0.12);
+    }
+
+    .reset-button:active {
+      transform: scale(0.97);
+    }
+
+    .workspace {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 0;
+    }
+
+    .groups {
+      display: flex;
+      align-items: stretch;
+      justify-content: center;
+      gap: clamp(14px, 2vw, 28px);
+      width: 100%;
+    }
+
+    .debuff-group {
+      position: relative;
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      align-items: center;
+      gap: 10px;
+      padding: clamp(13px, 1.7vw, 22px);
+      overflow: hidden;
+      border: 1px solid var(--panel-border);
+      border-radius: 22px;
+      background: var(--panel);
+      box-shadow: 0 22px 70px rgba(0, 0, 0, 0.28), inset 0 1px rgba(255, 255, 255, 0.035);
+      backdrop-filter: blur(14px);
+    }
+
+    .debuff-group::before {
+      content: "";
+      position: absolute;
+      inset: 0 0 auto;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.24), transparent);
+    }
+
+    .choice-row {
+      display: flex;
+      justify-content: center;
+      width: 100%;
+    }
+
+    .truth-button {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: clamp(10px, 1.5vw, 18px);
+      width: 100%;
+      height: var(--icon-size);
+      min-height: var(--icon-size);
+      padding: 8px clamp(16px, 3vw, 36px);
+      overflow: hidden;
+      border: 3px solid rgba(255, 255, 255, 0.08);
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.045);
+      cursor: pointer;
+      opacity: 0.72;
+      transition: opacity 120ms ease, background 120ms ease, border-color 120ms ease, transform 120ms ease, box-shadow 120ms ease;
+    }
+
+    .truth-button img {
+      width: min(calc(var(--icon-size) * 0.65), 86px);
+      height: min(calc(var(--icon-size) * 0.65), 86px);
+      object-fit: contain;
+      pointer-events: none;
+    }
+
+    .truth-button span {
+      font-size: clamp(16px, 1.8vw, 24px);
+      font-weight: 950;
+      letter-spacing: 0.12em;
+    }
+
+    .truth-button:hover {
+      opacity: 0.88;
+    }
+
+    .truth-button:active {
+      transform: scale(0.985);
+    }
+
+    .truth-button[aria-pressed="true"] {
+      opacity: 1;
+      background: linear-gradient(110deg, rgba(84, 183, 255, 0.3), rgba(84, 183, 255, 0.11));
+      border-color: var(--true);
+      box-shadow: 0 0 0 5px rgba(84, 183, 255, 0.17), inset 0 0 42px rgba(84, 183, 255, 0.14), 0 0 34px rgba(84, 183, 255, 0.2);
+    }
+
+    .truth-button[aria-pressed="true"]::after {
+      content: "選択中";
+      position: absolute;
+      right: clamp(12px, 2vw, 24px);
+      padding: 5px 8px;
+      border-radius: 7px;
+      background: var(--true);
+      color: #06121c;
+      font-size: 10px;
+      font-weight: 950;
+      letter-spacing: 0.08em;
+    }
+
+    .truth-button[data-value="false"][aria-pressed="true"] {
+      background: linear-gradient(110deg, rgba(255, 94, 99, 0.3), rgba(255, 94, 99, 0.11));
+      border-color: var(--false);
+      box-shadow: 0 0 0 5px rgba(255, 94, 99, 0.17), inset 0 0 42px rgba(255, 94, 99, 0.14), 0 0 34px rgba(255, 94, 99, 0.2);
+    }
+
+    .truth-button[data-value="false"][aria-pressed="true"]::after {
+      background: var(--false);
+      color: #210608;
+    }
+
+    .debuff-list {
+      display: grid;
+      grid-template-columns: repeat(var(--count), minmax(0, var(--icon-size)));
+      justify-content: center;
+      gap: clamp(8px, 1vw, 15px);
+    }
+
+    .debuff-cell {
+      display: grid;
+      grid-template-rows: 36px auto auto;
+      justify-items: center;
+      gap: 5px;
+      min-width: 0;
+    }
+
+    .result {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      min-height: 36px;
+      padding: 0 5px;
+      border-radius: 8px;
+      color: #ffffff;
+      font-size: clamp(15px, 1.7vw, 23px);
+      font-weight: 950;
+      letter-spacing: 0.05em;
+      line-height: 1;
+      white-space: nowrap;
+      text-shadow: 0 2px 12px rgba(0, 0, 0, 0.7);
+    }
+
+    .result.has-result {
+      background: rgba(255, 211, 107, 0.11);
+      box-shadow: inset 0 0 0 1px rgba(255, 211, 107, 0.2);
+    }
+
+    .result.is-important {
+      color: var(--danger);
+      background: rgba(255, 79, 89, 0.1);
+      text-shadow: 0 0 18px rgba(255, 79, 89, 0.32);
+    }
+
+    .debuff-button {
+      position: relative;
+      width: var(--icon-size);
+      height: var(--icon-size);
+      padding: 4px;
+      border: 3px solid transparent;
+      border-radius: 19%;
+      background: transparent;
+      cursor: pointer;
+      transition: transform 110ms ease, filter 110ms ease, border-color 140ms ease, background 140ms ease, box-shadow 140ms ease;
+      touch-action: manipulation;
+    }
+
+    .debuff-button img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      pointer-events: none;
+      filter: drop-shadow(0 9px 12px rgba(0, 0, 0, 0.42));
+    }
+
+    .debuff-button.is-confirmed {
+      border-color: #ffd36b;
+      background: rgba(255, 211, 107, 0.1);
+      box-shadow: 0 0 0 4px rgba(255, 211, 107, 0.12), inset 0 0 25px rgba(255, 211, 107, 0.08), 0 0 28px rgba(255, 211, 107, 0.18);
+      transform: translateY(-2px);
+    }
+
+    .debuff-button.is-confirmed::after {
+      content: "✓";
+      position: absolute;
+      top: -9px;
+      right: -9px;
+      display: grid;
+      place-items: center;
+      width: clamp(25px, 2.4vw, 32px);
+      height: clamp(25px, 2.4vw, 32px);
+      border: 3px solid #171824;
+      border-radius: 50%;
+      background: #ffd36b;
+      color: #17120a;
+      font-size: clamp(14px, 1.5vw, 19px);
+      font-weight: 950;
+      line-height: 1;
+      box-shadow: 0 3px 12px rgba(0, 0, 0, 0.46);
+    }
+
+    .debuff-button:hover {
+      filter: brightness(1.08);
+      transform: translateY(-2px);
+    }
+
+    .debuff-button.is-confirmed:hover {
+      transform: translateY(-4px);
+    }
+
+    .debuff-button:active,
+    .debuff-button.is-hit {
+      transform: scale(0.91);
+      filter: brightness(1.2);
+    }
+
+    .debuff-button:focus-visible,
+    .truth-button:focus-visible,
+    .reset-button:focus-visible,
+    .reverse-toggle:has(input:focus-visible) {
+      outline: 3px solid #fff;
+      outline-offset: 3px;
+    }
+
+    .debuff-name {
+      color: #aeb2c2;
+      font-size: clamp(10px, 1vw, 12px);
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      white-space: nowrap;
+    }
+
+    .debuff-cell.is-confirmed .debuff-name {
+      color: #f3e2af;
+    }
+
+    .helper {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 24px;
+      margin: 0;
+      color: #777d91;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      text-align: center;
+    }
+
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: max(22px, env(safe-area-inset-bottom));
+      z-index: 10;
+      padding: 10px 14px;
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      border-radius: 10px;
+      background: rgba(9, 11, 18, 0.94);
+      box-shadow: 0 12px 36px rgba(0, 0, 0, 0.42);
+      font-size: 12px;
+      font-weight: 800;
+      opacity: 0;
+      pointer-events: none;
+      transform: translate(-50%, 8px);
+      transition: opacity 160ms ease, transform 160ms ease;
+    }
+
+    .toast.is-visible {
+      opacity: 1;
+      transform: translate(-50%, 0);
+    }
+
+    @media (max-width: 900px) {
+      :root {
+        --icon-size: clamp(68px, 17vw, 104px);
+      }
+
+      .groups {
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .debuff-group {
+        width: min(100%, 610px);
+      }
+    }
+
+    @media (max-width: 560px) {
+      .app {
+        padding-left: 10px;
+        padding-right: 10px;
+        gap: 11px;
+      }
+
+      .topbar {
+        align-items: flex-start;
+      }
+
+      .brand p,
+      .reverse-label {
+        display: none;
+      }
+
+      .toolbar {
+        gap: 7px;
+      }
+
+      .reverse-toggle,
+      .reset-button {
+        min-height: 40px;
+      }
+
+      .reverse-toggle {
+        padding: 7px 9px;
+      }
+
+      .reset-button {
+        padding: 0 11px;
+      }
+
+      .debuff-group {
+        padding: 11px 8px;
+        border-radius: 17px;
+      }
+
+      .debuff-list {
+        gap: 3px;
+      }
+
+      .debuff-cell {
+        grid-template-rows: 31px auto auto;
+        gap: 3px;
+      }
+
+      .result {
+        min-height: 31px;
+        padding-inline: 2px;
+        font-size: clamp(12px, 3.4vw, 15px);
+        letter-spacing: 0;
+      }
+
+      .truth-button {
+        border-radius: 14px;
+      }
+
+      .truth-button[aria-pressed="true"]::after {
+        right: 9px;
+        padding: 4px 6px;
+        font-size: 8px;
+      }
+
+      .helper {
+        font-size: 10px;
+      }
+    }
+
+    @media (max-height: 620px) and (orientation: landscape) {
+      :root {
+        --icon-size: clamp(66px, 13.5vh, 92px);
+        --selector-size: 38px;
+      }
+
+      .app {
+        padding-top: 10px;
+        padding-bottom: 10px;
+        gap: 8px;
+      }
+
+      .debuff-group {
+        gap: 5px;
+        padding: 8px 11px;
+      }
+
+      .truth-button {
+        border-radius: 13px;
+      }
+
+      .debuff-cell {
+        grid-template-rows: 29px auto auto;
+      }
+
+      .result {
+        min-height: 29px;
+        font-size: 15px;
+      }
+
+      .helper {
+        display: none;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        scroll-behavior: auto !important;
+        transition-duration: 0.01ms !important;
+        animation-duration: 0.01ms !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <header class="topbar">
+      <div class="brand">
+        <h1>P4 SAYS</h1>
+        <p>DEBUFF MEMORY</p>
+      </div>
+      <div class="toolbar">
+        <label class="reverse-toggle">
+          <input id="reverse-order" type="checkbox">
+          <span class="switch-track" aria-hidden="true"></span>
+          <span class="reverse-label">グループ内を逆順</span>
+        </label>
+        <button id="reset-all" class="reset-button" type="button">すべてリセット</button>
+      </div>
+    </header>
+
+    <section class="workspace" aria-label="デバフ入力">
+      <div id="groups" class="groups"></div>
+    </section>
+
+    <p class="helper">グループごとに「ほんと／うそ」→ デバフの順にタッチ</p>
+  </main>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
